@@ -16,7 +16,26 @@ public class BoardController {
 
     // DI
     // @Autowired
+    // 네이티브 쿼리 연습
     private final BoardNativeRepository boardNativeRepository;
+    // JPA API, JPQL
+    private final BoardRepository boardRepository;
+
+    // 특정 게시글 요청 확인
+    // 주소설계 - http://localhost:8080/board/1
+    @GetMapping("/board/{id}")
+    public String detail(@PathVariable(name = "id") Integer id, HttpServletRequest request) {
+
+        // JPA API 사용
+        //  Board board = boardNativeRepository.findById(id);
+        //  request.setAttribute("board", board);
+
+        // JPQL FETCH join 사용
+           Board board = boardRepository.findByIdJoinUser(id);
+           request.setAttribute("board", board);
+
+        return "board/detail";
+    }
 
     @GetMapping("/")
     public String index(Model model) {
@@ -49,14 +68,7 @@ public class BoardController {
         return "redirect:/";
     }
 
-    // 특정 게시글 요청 확인
-    // 주소설계 - http://localhost:8080/board/10
-    @GetMapping("/board/{id}")
-    public String detail(@PathVariable(name = "id") Integer id, HttpServletRequest request) {
-        Board board = boardNativeRepository.findById(id);
-        request.setAttribute("board", board);
-        return "board/detail";
-    }
+
 
     // 주소설계 - http://localhost:8080/board/10/delete (form 활용하기 때문에 delete 선언)
     // form 태그에서는 GET, POST 방식만 지원하기 때문이다.
