@@ -1,5 +1,7 @@
 package com.tenco.blog_v1.user;
 
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,7 +10,43 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @Slf4j
 @Controller
+@RequiredArgsConstructor
 public class UserController {
+    
+    // DI 처리
+    private final UserRepository userRepository;
+    private final HttpSession session;
+
+    /**
+     * 자원에 요청은 GET 방식이지만 보안의 이유로 예외!
+     * 로그인 처리 메서드
+     * 요청 주소 : POST  http://localhost:8080/login
+     * @param reqDTO
+     * @return
+     */
+    @PostMapping("/login")
+    public String login(UserDTO.LoginDTO reqDTO) {
+        try {
+            User sessionUser = userRepository.findByUserNameAndPassword(reqDTO.getUsername(), reqDTO.getPassword());
+            session.setAttribute("sessionUser", sessionUser);
+            return "redirect:/";
+        } catch (Exception e) {
+            // 쿼리 스트링으로 error 이 들어오면 따로 처리하는 방식도 있다.
+            // 로그인 실패
+            return "redirect:/login-form?error";
+        }
+    }
+
+    /**
+     * 로그아웃
+     * 주소 : http://localhost:8080/logout
+     * @return
+     */
+    @GetMapping("/logout")
+    public String logout() {
+        session.invalidate(); // 세션을 무효화 한다. (로그아웃)
+        return "redirect:/";
+    }
 
     /**
      * 회원가입 페이지 요청

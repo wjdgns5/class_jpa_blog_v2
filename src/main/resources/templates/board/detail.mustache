@@ -8,7 +8,13 @@
         <form action="/board/{{board.id}}/delete" method="post">
             <button class="btn btn-danger">삭제</button>
         </form>
+
+
     </div>
+
+    <form action="/board/{{board.id}}/delete1" method="post">
+        <button class="btn btn-danger">삭제1</button>
+    </form>
 
     <div class="d-flex justify-content-end">
         <b>작성자</b> : {{board.user.username}}
