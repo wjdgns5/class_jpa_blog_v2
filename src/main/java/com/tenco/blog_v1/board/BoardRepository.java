@@ -14,6 +14,32 @@ import java.util.List;
 public class BoardRepository {
 
     private final EntityManager em;
+    
+    // 두 가지 방식으로 연습 - JPQL 사용, JPA API 메서드 사용
+    @Transactional
+    public void updateByIdJPQL(int id, String title, String content) {
+        // JPQL 쿼리 작성
+        String jpql = " UPDATE Board b SET b.title = :title, b.content = :content WHERE b.id = :id ";
+        Query query = em.createQuery(jpql);
+        query.setParameter("title", title);
+        query.setParameter("content", content);
+        query.setParameter("id", id);
+        // 쿼리 실행
+        query.executeUpdate();
+    }
+
+    @Transactional
+    public void updateByIdJPA(int id, String title, String content) {
+        // JPA API 쿼리 작성
+        // 1차 캐시에서 찾아서 들고온다 DB까지 가지않음
+       Board board = em.find(Board.class, id);
+       if(board != null) {
+           board.setTitle(title);
+           board.setContent(content);
+       }
+       // flush 명령, commit 명령 할 필요없이
+        // 트랜잭션을 선언하면 ---> 더티 체킹
+    }
 
     /**
      * 게시글 조회 메서드 

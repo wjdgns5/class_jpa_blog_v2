@@ -25,6 +25,52 @@ public class BoardController {
     // 세션을 받기위한 준비
     private final HttpSession session;
 
+    // 게시글 수정 요청 기능
+    // board/{id}/update
+    @PostMapping("/board/{id}/update")
+    public String update(@PathVariable(name = "id")Integer id, @ModelAttribute BoardDTO.UpdateDTO reqDto) {
+
+        // 1. 데이터 바인딩 방식 수정
+        System.out.println("BoardDTO : " + reqDto);
+       //  @ModelAttribute : 모델 객체로 바인딩할 때 사용
+        // 2. 인증검사 - 로그인 여부 판단
+        User sessionUser = (User)session.getAttribute("sessionUser");
+        if(sessionUser == null) {
+            return "redirect:/login-form";
+        }
+        // 3. 권한체크 - 내 글이 맞는지 체크
+        Board board = boardRepository.findById(id); // 조회
+        if(board == null) {
+            return "redirect:/"; // 게시글이 없다면 에러 페이지 추후 수정
+        }
+        if (!board.getUser().getId().equals(sessionUser.getId())) {
+            return "redirect:/error-403"; // 권한이 없습니다. 추후 수정
+        }
+        // 4. 유효성 검사
+
+        // 5. 서비스 측에 위임 (직접 구현) - repository 사용
+        boardRepository.updateByIdJPA(id, reqDto.getTitle(), reqDto.getContent());
+
+        // 6. 리다이렉트 처리
+
+        return "redirect:/board/" + id;
+    }
+
+    // 게시글 수정 화면 요청
+    @GetMapping("/board/{id}/update-form")
+    public String updateForm(@PathVariable(name = "id")Integer id, HttpServletRequest request) {
+        // 1. UpdateDTO  : BoardDTO안에 내부 정적 클래스로 설계하면 된다.
+
+        // 1. 게시글 조회
+//      Board board = boardNativeRepository.findById(id);
+        Board board = boardRepository.findById(id);
+        // 2. 요청 속성에 조회한 게시글 속성 및 값 추가
+        request.setAttribute("board", board);
+        // 템플릿 뷰 리졸브 - 템플릿 반환
+        // src/main/resource/templates/board/update-form.mustache
+        return "board/update-form";
+    }
+
     /** JPA API를 통해서 만들어보자?
      * 주소 테스트 http://localhost:8080/board/1/delete1
      * @param id
@@ -146,21 +192,4 @@ List<Board> boardList = boardRepository.findAll();
         return "redirect:/";
     }
 
-    // 게시글 수정 화면 요청
-    @GetMapping("/board/{id}/update-form")
-    public String update(@PathVariable(name = "id")Integer id, HttpServletRequest request) {
-        Board board = boardNativeRepository.findById(id);
-        request.setAttribute("board", board);
-        // src/main/resource/templates/board/update-form.mustache
-        return "board/update-form";
-    }
-
-    // 게시글 수정 요청 기능
-    // board/{id}/update
-    @PostMapping("/board/{id}/update")
-    public String update(@PathVariable(name = "id")Integer id, @RequestParam(name = "title") String title, @RequestParam(name = "content") String content) {
-        // 업데이트 기능이 완료되면 디테일로 자기자신
-        boardNativeRepository.updateById(id, title, content);
-        return "redirect:/board/detail" + id;
-    }
 }

@@ -18,4 +18,13 @@ public class BoardDTO {
                     .build();
         }
     }
+
+    // 정적 메서드
+    @Data
+    public static class UpdateDTO {
+        private String username;
+        private String title;
+        private String content;
+    }
+
 }

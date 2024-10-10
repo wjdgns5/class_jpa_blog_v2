@@ -2,11 +2,11 @@
 
 <main class="container p-5 content">
     <div class="card">
-        <div class="card-header"><b>{{name}}</b></div>
+        <div class="card-header">회원정보 수정</div>
         <div class="card-body">
             <form action="/user/update" method="post" enctype="application/x-www-form-urlencoded">
                 <div class="mb-3">
-                    <input type="text" class="form-control" placeholder="enter username" name="username" disabled>
+                    <input type="text" class="form-control" placeholder="enter username" name="username" disabled value="{{user.username}}">
                 </div>
 
                 <div class="mb-3">
@@ -14,7 +14,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <input type="email" class="form-control" placeholder="enter email" name="email">
+                    <input type="email" class="form-control" placeholder="enter email" name="email" value="{{user.email}}">
                 </div>
 
                 <button type="submit" class="btn btn-primary form-control">회원정보수정</button>
