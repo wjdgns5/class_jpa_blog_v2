@@ -25,6 +25,11 @@ public class User {
     private String password;
     private String email;
 
+    // 일반 사용자라면 "USER"
+    // 관리자 사용자라면 "ADMIN"
+    @Column(nullable = false)
+    private String role; // 등급? 추가
+
     @CreationTimestamp // 엔티티(Entity) 생성시 자동으로 현재 시간 입력 어노테이션
     private Timestamp createdAt;
 
