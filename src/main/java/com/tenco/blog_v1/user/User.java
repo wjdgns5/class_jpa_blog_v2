@@ -1,19 +1,18 @@
 package com.tenco.blog_v1.user;
 
-import com.tenco.blog_v1.board.Board;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
-import java.util.List;
 
+@Getter
+@Setter
 @NoArgsConstructor
-@Data
+@AllArgsConstructor
 @Entity
 @Table(name = "user_tb")
+@Builder
 public class User {
 
     @Id
@@ -27,26 +26,10 @@ public class User {
 
     // 일반 사용자라면 "USER"
     // 관리자 사용자라면 "ADMIN"
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String role; // 등급? 추가
 
     @CreationTimestamp // 엔티티(Entity) 생성시 자동으로 현재 시간 입력 어노테이션
     private Timestamp createdAt;
-
-    // 단방향, 양방향 매핑(mappedBy)
-//    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER) // 지연 로딩 설정
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY) // 즉시 로딩 설정
-    // 앞은 자기자신 기준
-    private List<Board> boards;
-
-    @Builder
-    public User(Integer id, String username, String password, String email, Timestamp createdAt, List<Board> boards) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.createdAt = createdAt;
-        this.boards = boards;
-    }
 
 }
